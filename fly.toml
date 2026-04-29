@@ -1,4 +1,3 @@
-cat > fly.toml <<'EOF'
 app = "host-otmeba"
 primary_region = "fra"
 
@@ -25,11 +24,3 @@ primary_region = "fra"
   cpu_kind = "shared"
   cpus = 1
   memory_mb = 1024
-EOF
-
-grep -n "source" fly.toml
-
-flyctl deploy -a host-otmeba \
-  --image registry.fly.io/host-otmeba:deployment-f91ed9822028d8e2f73d3627bad6adaa \
-  --depot-scope=app \
-  --config ./fly.toml
