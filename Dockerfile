@@ -1,30 +1,38 @@
-# Offizielles OmniRoute Repo direkt aus GitHub bauen
+# OmniRoute = Next.js App → braucht build + next start
 FROM node:20-slim AS builder
 
-RUN apt-get update && apt-get install -y --no-install-recommends git python3 build-essential ca-certificates \
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git ca-certificates python3 build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /app
+# Repo klonen
 RUN git clone --depth 1 https://github.com/diegosouzapw/OmniRoute.git .
 
-RUN npm install -g pnpm@9 || npm install -g pnpm
-RUN (pnpm install --frozen-lockfile || pnpm install || npm install)
-RUN (pnpm run build || npm run build || echo "no build step")
+# Dependencies + Next.js Production Build
+RUN npm install --legacy-peer-deps
+RUN npm run build
 
-# Runtime
+# ---------- Runtime ----------
 FROM node:20-slim
-RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Komplett vom Builder übernehmen (inkl. .next, node_modules, scripts)
 COPY --from=builder /app /app
 
 ENV NODE_ENV=production
 ENV PORT=8080
-ENV HOST=0.0.0.0
+ENV HOSTNAME=0.0.0.0
+ENV OMNIROUTE_DATA_DIR=/data
+
+VOLUME ["/data"]
 EXPOSE 8080
 
-# Daten (config, db) auf persistentes Volume
-ENV OMNIROUTE_DATA_DIR=/data
-VOLUME ["/data"]
-
-CMD ["sh", "-c", "node bin/omniroute.js || node dist/index.js || npm start"]
+# Next.js custom server starten
+CMD ["npm", "start"]
