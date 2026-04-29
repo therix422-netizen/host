@@ -1,5 +1,5 @@
 # OmniRoute = Next.js App → braucht build + next start
-FROM node:20-slim AS builder
+FROM node:22-slim AS builder
 
 WORKDIR /app
 
@@ -15,7 +15,7 @@ RUN npm install --legacy-peer-deps
 RUN npm run build
 
 # ---------- Runtime ----------
-FROM node:20-slim
+FROM node:22-slim
 
 WORKDIR /app
 
