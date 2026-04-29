@@ -1,25 +1,30 @@
-app = "omniroute-tunnel"
-primary_region = "fra"
+# fly.toml app configuration file generated for host-otmeba on 2026-04-29T01:43:35Z
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'host-otmeba'
+primary_region = 'ams'
 
 [build]
 
 [env]
-  PORT = "8080"
-  HOST = "0.0.0.0"
-  NODE_ENV = "production"
-  OMNIROUTE_DATA_DIR = "/data"
+  HOST = '0.0.0.0'
+  NODE_ENV = 'production'
+  OMNIROUTE_DATA_DIR = '/data'
+  PORT = '8080'
+
+[[mounts]]
+  source = 'data'
+  destination = '/data'
 
 [http_service]
   internal_port = 8080
   force_https = true
-  auto_stop_machines = false
+  auto_stop_machines = 'off'
   auto_start_machines = true
   min_machines_running = 1
 
-[[mounts]]
-  source = "omniroute_data"
-  destination = "/data"
-
 [[vm]]
-  size = "shared-cpu-1x"
-  memory = "1024mb"
+  size = 'shared-cpu-1x'
+  memory = '1024mb'
